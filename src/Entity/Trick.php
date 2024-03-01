@@ -35,7 +35,7 @@ class Trick
     #[ORM\OneToMany(targetEntity: Media::class, mappedBy: 'trick', orphanRemoval: true)]
     private Collection $medias;
 
-    #[ORM\ManyToOne(inversedBy: 'trick')]
+    #[ORM\ManyToOne(inversedBy: 'tricks')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
