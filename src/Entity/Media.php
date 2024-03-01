@@ -2,16 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\MediaRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Traits\IdentifiableTrait;
+use App\Repository\MediaRepository;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
 class Media
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    use IdentifiableTrait;
 
     #[ORM\Column(length: 255)]
     private ?string $type = null;
@@ -22,11 +20,6 @@ class Media
     #[ORM\ManyToOne(inversedBy: 'media')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Trick $trick = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getType(): ?string
     {

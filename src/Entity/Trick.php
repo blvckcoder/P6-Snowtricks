@@ -2,22 +2,19 @@
 
 namespace App\Entity;
 
-use App\Traits\Timestampable;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\TrickRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Traits\IdentifiableTrait;
+use App\Traits\TimestampableTrait;
+use App\Repository\TrickRepository;
 
 #[ORM\Entity(repositoryClass: TrickRepository::class)]
 class Trick
 {
-    use Timestampable; 
-    
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    use IdentifiableTrait;
+    use TimestampableTrait; 
 
     #[ORM\Column(length: 255, unique: true)]
     private ?string $name = null;
@@ -46,11 +43,6 @@ class Trick
     {
         $this->comments = new ArrayCollection();
         $this->medias = new ArrayCollection();
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getName(): ?string

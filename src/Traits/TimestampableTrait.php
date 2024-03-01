@@ -3,7 +3,7 @@ namespace App\Traits;
 
 Use Doctrine\ORM\Mapping as ORM;
 
-trait Timestampable
+trait TimestampableTrait
 {
     #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeImmutable $createdAt = null;
