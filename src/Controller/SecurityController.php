@@ -51,7 +51,6 @@ class SecurityController extends AbstractController
                 $token = $tokenGenerator->generateToken();
                 $user->setResetToken($token);
 
-                $entityManager->persist($user);
                 $entityManager->flush();
 
                 $url = $this->generateUrl('reset_password', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -102,7 +101,7 @@ class SecurityController extends AbstractController
                         $form->get('password')->getData()
                     )
                 );
-                $entityManager->persist($user);
+
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Mot de passe changé avec succès');
