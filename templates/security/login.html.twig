@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login Page{% endblock %}
+
+{% block body %}
+<main class="form-signin w-100 m-auto mt-5">
+    <form action="{{ path('app_login') }}" method="post">
+        {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        {% if app.user %}
+        <div class="mb-3">
+            Vous êtes connecté en tant que {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Se
+                Déconnecter</a>
+        </div>
+        {% endif %}
+
+        <img class="mx-auto mb-4" src="https://getbootstrap.com/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72"
+            height="57">
+        <h1 class="h3 mb-3 fw-normal text-center">Log in</h1>
+
+        <div class="form-floating">
+            <input type="email" class="form-control" value="{{ last_username }}" name="email" id="floatingInputEmail"
+                placeholder="name@example.com" autocomplete="email" required autofocus>
+            <label for="floatingInputEmail">Email address</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" name="password" id="floatingPassword" placeholder="Password"
+                autocomplete="current-password" required>
+            <label for="floatingPassword">Password</label>
+        </div>
+
+        <div class="form-check text-start my-3">
+            <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+                Remember me
+            </label>
+        </div>
+
+        <input type="hidden" name="/login" value="app_login">
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <button class="btn btn-primary w-100 py-2" type="submit">Log in</button>
+        <div class="text-center">
+            <a href="{{ path('forgotten_password')}}"><small>Mot de passe oublié?</small></a>
+        </div>
+        <p class="mt-5 mb-3 text-body-secondary">© blvckcoder 2024</p>
+    </form>
+</main>
+
+
+{% endblock %}

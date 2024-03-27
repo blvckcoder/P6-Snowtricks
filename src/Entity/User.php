@@ -8,10 +8,12 @@ use Doctrine\Common\Collections\Collection;
 use App\Traits\IdentifiableTrait;
 use App\Traits\TimestampableTrait;
 use App\Repository\UserRepository;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use IdentifiableTrait;
@@ -36,7 +38,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $username = null;
 
     #[ORM\Column]
-    private ?bool $isVerified = null;
+    private ?bool $isVerified = false;
+
+    #[ORM\Column(type:'string', length: 100, nullable: true)]
+    private $resetToken;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $profilePicture = null;
@@ -49,6 +54,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
+        $this->createdAt = new \DateTimeImmutable();
         $this->comments = new ArrayCollection();
         $this->tricks = new ArrayCollection();
     }
@@ -135,7 +141,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function isIsVerified(): ?bool
+    public function getIsVerified(): ?bool
     {
         return $this->isVerified;
     }
@@ -143,6 +149,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function setResetToken(?string $resetToken): self
+    {
+        $this->resetToken = $resetToken;
 
         return $this;
     }
@@ -218,4 +236,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+
 }
