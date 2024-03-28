@@ -1,0 +1,27 @@
+{% extends "base.html.twig" %}
+
+{% block title %} {{ trick.name }} {% endblock %}
+
+{% block body %}
+
+<h1>{{ trick.name }}</h1>
+{{ dump(trick) }}
+<img src="{{ trick.media.first().url }}" class="card-img-top" alt="...">
+<ul>
+<li> Description: {{ trick.description }}</li>
+<li>Category: {{ trick.category.name }}</li>
+<li> Créé le: {{ trick.createdAt|date('Y-m-d H:i:s') }}</li>
+<li>Par: {{ trick.author.username }}</li>
+<li></li>
+<li></li>
+<li></li>
+<ul>
+<ul>
+    {% for media in trick.media %}
+        <li>
+            <img src="{{ media.url }}" alt="Description optionnelle">
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
