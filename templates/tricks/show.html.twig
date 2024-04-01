@@ -1,27 +1,113 @@
 {% extends "base.html.twig" %}
 
-{% block title %} {{ trick.name }} {% endblock %}
+{% block title %}
+	{{ trick.name }}
+{% endblock %}
 
 {% block body %}
+	<div class="trick-image-container" style="background-image: url('{{ trick.media.first().url }}');">
+		<div class="overlay">
+			<h1 class="text-white">{{ trick.name }}</h1>
+		</div>
+		{% if app.user %}
+			<div class="position-relative">
+				<div class="position-absolute top-0 end-0 mt-2 mx-5">
+					<a href="#" id="trick-edit" class="text-white mx-2">
+						<i class="fa-solid fa-pen"></i></a><a href="#" id="trick-delete" class="text-white"><i class="fa-solid fa-trash"></i>
+					</a>
+				</div>
+			</div>
+		{% endif %}
+	</div>
 
-<h1>{{ trick.name }}</h1>
-{{ dump(trick) }}
-<img src="{{ trick.media.first().url }}" class="card-img-top" alt="...">
-<ul>
-<li> Description: {{ trick.description }}</li>
-<li>Category: {{ trick.category.name }}</li>
-<li> Créé le: {{ trick.createdAt|date('Y-m-d H:i:s') }}</li>
-<li>Par: {{ trick.author.username }}</li>
-<li></li>
-<li></li>
-<li></li>
-<ul>
-<ul>
-    {% for media in trick.media %}
-        <li>
-            <img src="{{ media.url }}" alt="Description optionnelle">
-        </li>
-    {% endfor %}
-</ul>
+                    
+	<div class="container mt-4">
+		<div class="row row-cols-1 row-cols-md-5 g-4">
+			{% for media in trick.media %}
+				<div class="col">
+					{% if media.type == 'image' %}
+						<a href="#" data-bs-toggle="modal" data-bs-target="#imageModal-{{ loop.index }}">
+							<img src="{{ media.url }}" alt="..." class="media" width="200px" height="200px">
+						</a>
+						<!-- Modal -->
+						<div class="modal fade" id="imageModal-{{ loop.index }}" tabindex="-1" aria-labelledby="imageModalLabel-{{ loop.index }}" aria-hidden="true">
+							<div class="modal-dialog modal-lg">
+								<div class="modal-content">
+									<div class="modal-body">
+										<img src="{{ media.url }}" alt="..." class="img-fluid">
+									</div>
+								</div>
+							</div>
+						</div>
+					{% else %}
+						<video controls src="{{ media.url }}" class="media img-fluid"></video>
+					{% endif %}
+				</div>
+			{% endfor %}
+		</div>
+	</div>
 
+	<div class="container mt-5">
+		<div class="row">
+			<div class="justify-content-center lead">{{ trick.description }}</div>
+		</div>
+		<div class="trick-meta mt-4 mb-4 justify-content-center">
+            <span class="badge bg-light">Catégorie: {{ trick.category.name }}</span>
+            <span class="badge bg-light">Auteur: {{ trick.author.username }}</span>
+            <span class="badge bg-light">Créé le: {{ trick.createdAt|date('Y-m-d') }}</span>
+            {% if trick.updatedAt %}
+				<span class="badge bg-light">Modifié le: {{ trick.updatedAt|date('Y-m-d') }}</span>
+			{% endif %}
+		</div>
+		<hr>
+	</div>
+
+	<div class="container">
+		{# COMMENT FORM #}
+		<h4 class="text-center mb-5">3 Comments</h4> {# afficher nombre de commentaires #}
+		{# if user connect #}
+		{% if app.user %}
+
+			{{ form_start(commentForm) }}
+				<div class="input-group">
+					<span class="input-group-text">Écrire un commentaire</span>
+					{{ form_widget(commentForm.content, {'attr': {'aria-label':'Write text'}}) }}
+				</div>
+				<div class="text-center">
+					<button type="submit" class="btn btn-primary mb-5" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 5rem; --bs-btn-font-size: .75rem;">Envoyer</button>
+				</div>
+			{{ form_end(commentForm) }}
+		{% else %}
+			<p>Pour écrire un commentaire, veuiller vous <a href="{{ path('app_login') }}">connecter</a> ou vous <a href="{{ path('app_register') }}">inscrire</a></p>
+		{% endif %}
+	
+	</div>
+
+	<div class="container">	
+		<div class="d-flex">
+			{% for comment in trick.comments %}
+			{# PHOTO #}
+			<div>
+				<a href="#">
+				<div class="position-relative">
+					<div class="blur-shadow-avatar rounded-circle">
+					<img class="avatar" src="{{ asset('assets/img/' ~ comment.author.profilePicture) }}" alt="...">
+					</div>
+				</div>
+				</a>
+			</div>
+
+			{# CORPS COMMENT #}
+			<div class="ms-3">
+				<h6>{{ comment.author.username }} <span class="text-muted text-xs">· {{ comment.createdAt|date('Y-m-d H:i') }}</span></h6>
+				<p>{{ comment.content }}</p>
+			</div>
+			{% endfor %}
+		</div>
+
+	</div>
+	<div class="text-center my-5">	
+		{# PAGINATION #}
+		<button type="button" class="btn btn-primary">Load more</button>
+	</div>
 {% endblock %}
