@@ -4,47 +4,63 @@
 	{{ trick.name }}
 {% endblock %}
 
+
 {% block body %}
-	<div class="trick-image-container" style="background-image: url('{{ trick.media.first().url }}');">
+	<div class="trick-image-container" style="background-image: url('{{ asset('assets/uploads/tricks/' ~ trick.media.first().url) }}');"> 
 		<div class="overlay">
 			<h1 class="text-white">{{ trick.name }}</h1>
 		</div>
 		{% if app.user %}
 			<div class="position-relative">
 				<div class="position-absolute top-0 end-0 mt-2 mx-5">
-					<a href="#" id="trick-edit" class="text-white mx-2">
-						<i class="fa-solid fa-pen"></i></a><a href="#" id="trick-delete" class="text-white"><i class="fa-solid fa-trash"></i>
-					</a>
+					<a href="#" id="trick-edit" class="text-white mx-2"><i class="fa-solid fa-pen"></i></a>
+					<a href="#" id="trick-delete" class="text-white"><i class="fa-solid fa-trash"></i></a>
 				</div>
 			</div>
 		{% endif %}
 	</div>
 
-                    
 	<div class="container mt-4">
-		<div class="row row-cols-1 row-cols-md-5 g-4">
-			{% for media in trick.media %}
-				<div class="col">
-					{% if media.type == 'image' %}
+
+		{% if images|length > 0 %}	
+			<h6 class="mt-4 text-center">Images</h6>
+		{% endif %}
+		<div class="row row-cols-1 row-cols-md-5 g-4 justify-content-center">
+			{% for image in images %}
+			
+					<div class="col text-center">
 						<a href="#" data-bs-toggle="modal" data-bs-target="#imageModal-{{ loop.index }}">
-							<img src="{{ media.url }}" alt="..." class="media" width="200px" height="200px">
+							<img src="{{ asset('assets/uploads/tricks/mini/300x300-' ~ image.url) }}" alt="{{ image.name }}" class="media" width="200px" height="200px">
 						</a>
-						<!-- Modal -->
+						{# Modal  #}
 						<div class="modal fade" id="imageModal-{{ loop.index }}" tabindex="-1" aria-labelledby="imageModalLabel-{{ loop.index }}" aria-hidden="true">
 							<div class="modal-dialog modal-lg">
 								<div class="modal-content">
 									<div class="modal-body">
-										<img src="{{ media.url }}" alt="..." class="img-fluid">
+										<img src="{{ asset('assets/uploads/tricks/' ~ image.url) }}" alt="{{ image.name }}" class="img-fluid">
 									</div>
 								</div>
 							</div>
 						</div>
-					{% else %}
-						<video controls src="{{ media.url }}" class="media img-fluid"></video>
-					{% endif %}
-				</div>
+					</div>
+				
 			{% endfor %}
 		</div>
+
+	
+
+		{% if videos|length > 0 %}
+			<h6 class="mt-4 text-center">videos</h6>
+ 		{% endif %}
+
+		<div class="row row-cols-1 row-cols-md-2 g-4 justify-content-center">
+			{% for video in videos %}
+					<div class="col text-center">
+						<iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video.url }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+					</div>
+			{% endfor %}
+		</div>
+
 	</div>
 
 	<div class="container mt-5">
@@ -52,62 +68,78 @@
 			<div class="justify-content-center lead">{{ trick.description }}</div>
 		</div>
 		<div class="trick-meta mt-4 mb-4 justify-content-center">
-            <span class="badge bg-light">Catégorie: {{ trick.category.name }}</span>
-            <span class="badge bg-light">Auteur: {{ trick.author.username }}</span>
-            <span class="badge bg-light">Créé le: {{ trick.createdAt|date('Y-m-d') }}</span>
-            {% if trick.updatedAt %}
-				<span class="badge bg-light">Modifié le: {{ trick.updatedAt|date('Y-m-d') }}</span>
+			<span class="badge bg-light">Catégorie:
+				{{ trick.category.name }}</span>
+			<span class="badge bg-light">Auteur:
+				{{ trick.author.username }}</span>
+			<span class="badge bg-light">Créé le:
+				{{ trick.createdAt|date('Y-m-d') }}</span>
+			{% if trick.updatedAt %}
+				<span class="badge bg-light">Modifié le:
+					{{ trick.updatedAt|date('Y-m-d') }}</span>
 			{% endif %}
 		</div>
 		<hr>
 	</div>
 
-	<div class="container">
+	<div
+		class="container">
 		{# COMMENT FORM #}
-		<h4 class="text-center mb-5">3 Comments</h4> {# afficher nombre de commentaires #}
-		{# if user connect #}
+		<h4 class="text-center mb-5">3 Comments</h4>
+		{# afficher nombre de commentaires #}
 		{% if app.user %}
 
 			{{ form_start(commentForm) }}
-				<div class="input-group">
-					<span class="input-group-text">Écrire un commentaire</span>
-					{{ form_widget(commentForm.content, {'attr': {'aria-label':'Write text'}}) }}
-				</div>
-				<div class="text-center">
-					<button type="submit" class="btn btn-primary mb-5" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 5rem; --bs-btn-font-size: .75rem;">Envoyer</button>
-				</div>
+			<div class="input-group">
+				<span class="input-group-text">Écrire un commentaire</span>
+				{{ form_widget(commentForm.content, {'attr': {'aria-label':'Write text'}}) }}
+			</div>
+			<div class="text-center">
+				<button type="submit" class="btn btn-primary mb-5" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 5rem; --bs-btn-font-size: .75rem;">Envoyer</button>
+			</div>
 			{{ form_end(commentForm) }}
 		{% else %}
-			<p>Pour écrire un commentaire, veuiller vous <a href="{{ path('app_login') }}">connecter</a> ou vous <a href="{{ path('app_register') }}">inscrire</a></p>
+			<p>Pour écrire un commentaire, veuiller vous
+				<a href="{{ path('app_login') }}">connecter</a>
+				ou vous
+				<a href="{{ path('app_register') }}">inscrire</a>
+			</p>
 		{% endif %}
-	
+
 	</div>
 
-	<div class="container">	
+	<div class="container">
 		<div class="d-flex">
 			{% for comment in trick.comments %}
-			{# PHOTO #}
-			<div>
-				<a href="#">
-				<div class="position-relative">
-					<div class="blur-shadow-avatar rounded-circle">
-					<img class="avatar" src="{{ asset('assets/img/' ~ comment.author.profilePicture) }}" alt="...">
-					</div>
+				{# PHOTO #}
+				<div>
+					<a href="#">
+						<div class="position-relative">
+							<div class="blur-shadow-avatar rounded-circle">
+								<img class="avatar" src="{{ asset('assets/img/' ~ comment.author.profilePicture) }}" alt="...">
+							</div>
+						</div>
+					</a>
 				</div>
-				</a>
-			</div>
 
-			{# CORPS COMMENT #}
-			<div class="ms-3">
-				<h6>{{ comment.author.username }} <span class="text-muted text-xs">· {{ comment.createdAt|date('Y-m-d H:i') }}</span></h6>
-				<p>{{ comment.content }}</p>
-			</div>
+				{# CORPS COMMENT #}
+				<div class="ms-3">
+					<h6>{{ comment.author.username }}
+						<span class="text-muted text-xs">·
+							{{ comment.createdAt|date('Y-m-d H:i') }}</span>
+					</h6>
+					<p>{{ comment.content }}</p>
+				</div>
 			{% endfor %}
 		</div>
 
 	</div>
-	<div class="text-center my-5">	
-		{# PAGINATION #}
-		<button type="button" class="btn btn-primary">Load more</button>
-	</div>
+
+	{% if trick.comments|length > 5 %}
+		<div
+			class="text-center my-5">
+			{# PAGINATION #}
+			<button type="button" class="btn btn-primary">Load more</button>
+		</div>
+	{% endif %}
 {% endblock %}

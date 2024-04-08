@@ -1,0 +1,26 @@
+{{ form_errors(form) }}
+{{ form_start(form) }}
+{{ form_row(form.name) }}
+{{ form_row(form.description) }}
+{{ form_row(form.category) }}
+{{ form_row(form.images) }}
+
+{{ form_label(form.videos, 'Videos (url)')}}
+    <div id="videos-collection" data-prototype="{{ form_widget(form.videos.vars.prototype)|e('html_attr') }}"></div>
+    <button type="button" id="add-video">Ajouter une Url</button>
+
+<div class="my-4">
+<button type="submit" class="btn btn-primary">Valider</button>
+</div>
+
+{{ form_end(form) }}
+
+<script>
+document.getElementById('add-video').addEventListener('click', function() {
+    var collectionHolder = document.querySelector('#videos-collection');
+    var item = document.createElement('div');
+    item.innerHTML = collectionHolder.dataset.prototype.replace(/__name__/g, collectionHolder.children.length);
+    collectionHolder.appendChild(item);
+});
+</script>
+

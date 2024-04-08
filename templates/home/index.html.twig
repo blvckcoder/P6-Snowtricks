@@ -32,10 +32,10 @@
         <div class="col">
             <div class="card bg-light mb-3" style="max-width: 20rem;">
                 <div class="card-header">{{ trick.category.name }}</div>
-                <img src="{{ trick.media.first().url }}" class="card-img-top" alt="...">
+                <img src="{{ asset('assets/uploads/tricks/mini/300x300-' ~ trick.media.first().url) }}" class="card-img-top" alt="...">
                 <div class="card-body">
                     <h4 class="card-title">{{ trick.name }}</h4>
-                    <p class="card-text">{{ trick.description }}</p>
+                    <p class="card-text">{{ trick.description|u.truncate(50, '...') }}</p>
                 </div>
             </div>
         </div>

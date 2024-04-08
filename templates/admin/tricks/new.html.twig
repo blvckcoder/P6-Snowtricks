@@ -1,0 +1,17 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+	New Tricks
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            {% include "admin/tricks/_form.html.twig" %}
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -7,28 +7,32 @@ use App\Traits\IdentifiableTrait;
 use App\Repository\MediaRepository;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
-class Media
+#[ORM\Table(name: "media")]
+#[ORM\InheritanceType("SINGLE_TABLE")]
+#[ORM\DiscriminatorColumn(name: "type", type: "string")]
+#[ORM\DiscriminatorMap(["image" => Image::class, "video" => Video::class])]
+abstract class Media
 {
     use IdentifiableTrait;
 
-    #[ORM\Column(length: 255)]
-    private ?string $type = null;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'string', length: 255)]
     private ?string $url = null;
 
-    #[ORM\ManyToOne(inversedBy: 'medias')]
+    #[ORM\ManyToOne(targetEntity: Trick::class, inversedBy: 'medias')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Trick $trick = null;
 
-    public function getType(): ?string
+    public function getName(): ?string
     {
-        return $this->type;
+        return $this->name;
     }
 
-    public function setType(string $type): static
+    public function setName(string $name): self
     {
-        $this->type = $type;
+        $this->name = $name;
 
         return $this;
     }
