@@ -41,6 +41,7 @@ class Trick
 
     public function __construct()
     {
+        $this->createdAt = new \DateTimeImmutable();
         $this->comments = new ArrayCollection();
         $this->medias = new ArrayCollection();
     }
