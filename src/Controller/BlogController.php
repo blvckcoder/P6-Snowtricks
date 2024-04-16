@@ -2,11 +2,12 @@
 
 namespace App\Controller;
 
-use App\Entity\Image;
 use App\Entity\Trick;
+use App\Entity\Image;
 use App\Entity\Video;
 use App\Entity\Comment;
 use App\Form\CommentFormType;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,15 +18,13 @@ class BlogController extends AbstractController
 {
 
     #[Route('/{slug}', name: 'show')]
-    public function show(Request $request, Trick $trick, CommentFormType $commentForm): Response
+    public function show(Request $request, Trick $trick, EntityManagerInterface $entityManager, CommentFormType $commentForm): Response
     {
-        $images = $trick->getMedia()->filter(function($media) {
-            return $media instanceof Image;
-        });
-    
-        $videos = $trick->getMedia()->filter(function($media) {
-            return $media instanceof Video;
-        });
+        $imageRepository = $entityManager->getRepository(Image::class);
+        $images = $imageRepository->findBy(['trick' => $trick]);
+
+        $videoRepository = $entityManager->getRepository(Video::class);
+        $videos = $videoRepository->findBy(['trick' => $trick]);
 
         $comment = new Comment();
         $form = $this->createForm(CommentFormType::class, $comment);
