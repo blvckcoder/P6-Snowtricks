@@ -3,10 +3,11 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Image;
-use App\Entity\Video;
 use App\Entity\Trick;
+use App\Entity\Video;
 use App\Form\TrickFormType;
 use App\Service\PictureService;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,7 +63,7 @@ class BlogController extends AbstractController
 
             $this->addFlash('success', 'Trick ajouté avec succès');
 
-            return $this->redirectToRoute('admin_trick_new');
+            return $this->redirectToRoute('home');
         }
 
         return $this->render('admin/tricks/new.html.twig', [
@@ -70,5 +71,70 @@ class BlogController extends AbstractController
             'form' => $form->createView(),
         ]);
 
+    }
+
+    #[Route('/edit/{id}', name:'edit')]
+    public function edit(Trick $trick, Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, PictureService $pictureService): Response
+    {
+        $form = $this->createForm(TrickFormType::class, $trick);
+
+        $form->handleRequest($request);
+        
+        if($form->isSubmitted() && $form->isValid()) {
+            // IMAGES
+            $images = $form->get('images')->getData();
+            foreach($images as $image){
+                $folder = 'tricks';
+                $fichier = $pictureService->add($image, $folder, 300, 300);
+
+                $img = new Image();
+                $img->setName($fichier);
+                $img->setUrl($img->getName());
+
+                $entityManager->persist($img);
+                $trick->addMedium($img);
+            }
+
+            // VIDEOS
+            $videos = $form->get('videos')->getData();
+            foreach ($videos as $videoUrl) {
+                $video = new Video();
+                $video->setName(uniqid('video_', true));
+                $video->setUrl($videoUrl);
+
+                $entityManager->persist($video);
+                $trick->addMedium($video);
+            }
+
+            $slug = $slugger->slug($trick->getName());
+            $trick->setSlug($slug);
+            $trick->setUpdatedAt(new DateTimeImmutable());
+        
+            $entityManager->persist($trick);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Trick modifié avec succès');
+
+            return $this->redirectToRoute('home');
+        }
+
+        $imageRepository = $entityManager->getRepository(Image::class);
+        $images = $imageRepository->findBy(['trick' => $trick]);
+
+        $videoRepository = $entityManager->getRepository(Video::class);
+        $videos = $videoRepository->findBy(['trick' => $trick]);
+
+        return $this->render('admin/tricks/edit.html.twig', [
+            'trick' => $trick,
+            'images' => $images,
+            'videos' => $videos,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/delete_image/{id}', name:'delete_image')]
+    function delete_image()
+    {
+        
     }
 }

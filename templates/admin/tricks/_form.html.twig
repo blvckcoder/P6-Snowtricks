@@ -3,24 +3,51 @@
 {{ form_row(form.name) }}
 {{ form_row(form.description) }}
 {{ form_row(form.category) }}
+
+{{dump(images)}}
+{# Images existantes #}
+{% if app.request.attributes.get('_route') == 'admin_trick_edit' %}
+	<h2>Images du trick</h2>
+
+	{% for image in images %}
+		<div>
+			<img src="{{ asset('assets/uploads/tricks/mini/300x300-' ~ image.name ) }}" alt="Image" width="150">
+			<a href="{{ path('admin_trick_delete_image', {id: image.id}) }}" data-delete data-token="{{ csrf_token('delete' ~ image.id) }}">Supprimer</a>
+		</div>
+	{% endfor %}
+{% endif %}
+
+
 {{ form_row(form.images) }}
 
+{{dump(videos)}}
+{# Videos existantes #}
+{% if app.request.attributes.get('_route') == 'admin_trick_edit' %}
+	<h2>Videos du trick</h2>
+
+	{% for video in videos %}
+		<div class="col text-center">
+			<iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video.url }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+			<a href="{{ path('admin_trick_delete_image', {id: video.id}) }}" data-delete data-token="{{ csrf_token('delete' ~ video.id) }}">Supprimer</a>
+		</div>
+	{% endfor %}
+{% endif %}
+
 {{ form_label(form.videos, 'Videos (url)')}}
-    <div id="videos-collection" data-prototype="{{ form_widget(form.videos.vars.prototype)|e('html_attr') }}"></div>
-    <button type="button" id="add-video">Ajouter une Url</button>
+<div id="videos-collection" data-prototype="{{ form_widget(form.videos.vars.prototype)|e('html_attr') }}"></div>
+<button type="button" id="add-video">Ajouter une Url</button>
 
 <div class="my-4">
-<button type="submit" class="btn btn-primary">Valider</button>
+	<button type="submit" class="btn btn-primary">Valider</button>
 </div>
 
 {{ form_end(form) }}
 
 <script>
-document.getElementById('add-video').addEventListener('click', function() {
-    var collectionHolder = document.querySelector('#videos-collection');
-    var item = document.createElement('div');
-    item.innerHTML = collectionHolder.dataset.prototype.replace(/__name__/g, collectionHolder.children.length);
-    collectionHolder.appendChild(item);
+	document.getElementById('add-video').addEventListener('click', function () {
+var collectionHolder = document.querySelector('#videos-collection');
+var item = document.createElement('div');
+item.innerHTML = collectionHolder.dataset.prototype.replace(/__name__/g, collectionHolder.children.length);
+collectionHolder.appendChild(item);
 });
 </script>
-
