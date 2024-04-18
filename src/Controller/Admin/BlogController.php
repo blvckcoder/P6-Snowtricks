@@ -132,6 +132,21 @@ class BlogController extends AbstractController
         ]);
     }
 
+    #[Route('/delete/{id}', name:'delete')]
+    public function delete(Trick $trick, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete' . $trick->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($trick);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Trick supprimé avec succès');
+        } else {
+            $this->addFlash('danger', 'Token CSRF invalide');
+        }
+
+        return $this->redirectToRoute('home');
+    }
+
     #[Route('/delete_image/{id}', name:'delete_image')]
     function delete_image()
     {
