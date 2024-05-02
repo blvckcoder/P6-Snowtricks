@@ -12,9 +12,9 @@
 		</div>
 		{% if app.user %}
 			<div class="position-relative">
-				<div class="position-absolute top-0 end-0 mt-2 mx-5">
+				<div class="position-absolute top-0 end-0 mt-2 mx-5 d-flex align-items-center">
 					<a href="{{ '/admin/trick/edit/' ~ trick.id }}" id="trick-edit" class="text-white mx-2"><i class="fa-solid fa-pen"></i></a>
-					<a href="#" id="trick-delete" class="text-white"><i class="fa-solid fa-trash"></i></a>
+					{% include "admin/tricks/_delete_form.html.twig" %}
 				</div>
 			</div>
 		{% endif %}

@@ -4,7 +4,6 @@
 {{ form_row(form.description) }}
 {{ form_row(form.category) }}
 
-{{dump(images)}}
 {# Images existantes #}
 {% if app.request.attributes.get('_route') == 'admin_trick_edit' %}
 	<h2>Images du trick</h2>
@@ -17,10 +16,9 @@
 	{% endfor %}
 {% endif %}
 
-
+<div class="toto">
 {{ form_row(form.images) }}
-
-{{dump(videos)}}
+</div>
 {# Videos existantes #}
 {% if app.request.attributes.get('_route') == 'admin_trick_edit' %}
 	<h2>Videos du trick</h2>
