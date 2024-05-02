@@ -81,6 +81,7 @@ class BlogController extends AbstractController
         $form->handleRequest($request);
         
         if($form->isSubmitted() && $form->isValid()) {
+            
             // IMAGES
             $images = $form->get('images')->getData();
             foreach($images as $image){
@@ -115,7 +116,7 @@ class BlogController extends AbstractController
 
             $this->addFlash('success', 'Trick modifié avec succès');
 
-            return $this->redirectToRoute('home');
+            //return $this->redirectToRoute('home');
         }
 
         $imageRepository = $entityManager->getRepository(Image::class);
@@ -148,8 +149,26 @@ class BlogController extends AbstractController
     }
 
     #[Route('/delete_image/{id}', name:'delete_image')]
-    function delete_image()
+    function delete_image(Image $image, Request $request, EntityManagerInterface $em, PictureService $pictureService): Response
     {
-        
+        $token = $request->request->get('_token');
+
+    if ($this->isCsrfTokenValid('delete' . $image->getId(), $token)) {
+
+        $name = $image->getName();
+
+        if ($pictureService->delete($name, 'tricks', 300, 300)) {
+            $em->remove($image);
+            $em->flush();
+
+            $this->addFlash('success', 'Image supprimée avec succès');
+        } else {
+            $this->addFlash('danger', 'Erreur de suppression');
+        }
+    } else {
+        $this->addFlash('danger', 'Token invalide');
+    }
+
+    return $this->redirectToRoute('home');
     }
 }
